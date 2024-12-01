@@ -6,7 +6,6 @@
     <title>Chess Game with Sound</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        /* All your existing CSS styles here */
         body {
             font-family: 'Poppins', sans-serif;
             display: flex;
@@ -20,34 +19,45 @@
 
         #game-container {
             display: flex;
+            flex-direction: column;
             gap: 20px;
             background-color: rgba(255, 255, 255, 0.1);
             padding: 20px;
             border-radius: 15px;
             backdrop-filter: blur(10px);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            max-width: 100%;
+            width: 100%;
         }
 
         #chessboard {
             display: grid;
-            grid-template-columns: repeat(8, 70px);
-            grid-template-rows: repeat(8, 70px);
+            grid-template-columns: repeat(8, 1fr);
+            gap: 2px;
             border: 3px solid #4a4a6a;
             border-radius: 8px;
             overflow: hidden;
+            width: 100%;
+            max-width: 560px;
+            margin: 0 auto;
         }
 
         .square {
-            width: 70px;
-            height: 70px;
+            aspect-ratio: 1 / 1;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 45px;
+            font-size: 7vw;
             cursor: pointer;
             transition: all 0.3s ease;
             position: relative;
             user-select: none;
+        }
+
+        @media (min-width: 560px) {
+            .square {
+                font-size: 40px;
+            }
         }
 
         .white { background-color: #e8ebef; }
@@ -57,8 +67,8 @@
         .valid-move::before {
             content: '';
             position: absolute;
-            width: 24px;
-            height: 24px;
+            width: 25%;
+            height: 25%;
             background-color: rgba(106, 159, 181, 0.5);
             border-radius: 50%;
             z-index: 1;
@@ -94,7 +104,9 @@
         }
 
         #side-panel {
-            width: 300px;
+            width: 100%;
+            max-width: 560px;
+            margin: 0 auto;
             display: flex;
             flex-direction: column;
             gap: 15px;
@@ -115,7 +127,7 @@
             padding: 15px;
             background-color: rgba(255, 255, 255, 0.05);
             border-radius: 8px;
-            max-height: 300px;
+            max-height: 200px;
         }
 
         .move-entry {
@@ -233,6 +245,22 @@
 
         .last-move {
             background-color: rgba(255, 255, 0, 0.15) !important;
+        }
+
+        #game-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        @media (min-width: 768px) {
+            #game-container {
+                flex-direction: row;
+                align-items: flex-start;
+            }
+
+            #chessboard, #side-panel {
+                flex: 1;
+            }
         }
     </style>
 </head>
@@ -779,7 +807,7 @@
             const opponentPawn = player === 'white' ? '♟' : '♙';
             if (row - pawnDirection >= 0 && row - pawnDirection < 8) {
                 if (col - 1 >= 0 && boardState[row - pawnDirection][col - 1] === opponentPawn) return true;
-                if (col + 1 < 8 && boardState[ row - pawnDirection][col + 1] === opponentPawn) return true;
+                if (col + 1 < 8 && boardState[row - pawnDirection][col + 1] === opponentPawn) return true;
             }
 
             const knightMoves = [[-2, -1], [-2, 1], [-1, -2], [-1, 2], [1, -2], [1, 2], [2, -1], [2, 1]];
