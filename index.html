@@ -3,226 +3,610 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brain Out - Social Gaming</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>SparkFusion</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #3498db, #8e44ad);
+            --secondary-gradient: linear-gradient(135deg, #2c3e50, #34495e);
+            --accent-gradient: linear-gradient(135deg, #e74c3c, #c0392b);
+            --background-color: #ecf0f1;
+            --text-color: #333;
+            --card-bg-color: rgba(255, 255, 255, 0.9);
+            --hover-color: #f39c12;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
         }
 
         body {
-            min-height: 100vh;
-            background: #fff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
+            font-family: 'Poppins', sans-serif;
+            background: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
             overflow-x: hidden;
         }
 
-        .background-doodles {
+        .dashboard {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: var(--secondary-gradient);
+            color: white;
+            padding: 2rem;
+            transition: all 0.3s ease;
             position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .sidebar h1 {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar h1::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background-color: var(--hover-color);
+            transition: all 0.3s ease;
+        }
+
+        .sidebar h1:hover::after {
+            width: 100%;
+            left: 0;
+        }
+
+        .sidebar-nav {
+            list-style-type: none;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 1rem;
+        }
+
+        .sidebar-nav a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            padding: 0.5rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-nav a:hover, .sidebar-nav a.active {
+            background-color: var(--hover-color);
+            transform: translateX(5px);
+        }
+
+        .sidebar-nav a i {
+            margin-right: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            margin-left: 250px;
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            min-height: 100vh;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h2 {
+            font-size: 2rem;
+            color: var(--text-color);
+            position: relative;
+            display: inline-block;
+        }
+
+        .header h2::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--hover-color);
+            transition: width 0.3s ease;
+        }
+
+        .header h2:hover::after {
+            width: 100%;
+        }
+
+        .card-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: var(--card-bg-color);
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(5px);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            pointer-events: none;
+            background: var(--primary-gradient);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1;
+        }
+
+        .card:hover::before {
             opacity: 0.1;
-            z-index: -1;
         }
 
-        .doodle {
-            position: absolute;
-            font-size: 2rem;
-            color: #333;
+        .card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
         }
 
-        .exit-button {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            text-decoration: none;
-            color: #666;
+        .card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: var(--text-color);
+            position: relative;
+            z-index: 2;
+        }
+
+        .card p {
             font-size: 0.9rem;
-            padding: 8px 16px;
-            border-radius: 20px;
+            color: var(--text-color);
+            position: relative;
+            z-index: 2;
+        }
+
+        .btn {
+            display: inline-block;
+            background: var(--primary-gradient);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-content {
+            background-color: var(--card-bg-color);
+            margin: 15% auto;
+            padding: 2rem;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 500px;
+            transform: scale(0.8);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .modal.active {
+            display: block;
+            opacity: 1;
+        }
+
+        .modal.active .modal-content {
+            transform: scale(1);
+        }
+
+        .close {
+            color: #aaa;
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
             transition: all 0.3s ease;
         }
 
-        .exit-button:hover {
-            background: #f0f0f0;
-        }
-
-        .container {
-            text-align: center;
-            padding: 20px;
-            max-width: 600px;
-            width: 100%;
-        }
-
-        .logo {
-            font-size: 3.5rem;
-            font-weight: 700;
-            margin-bottom: 2rem;
-            color: #333;
-        }
-
-        .play-button {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            background: #2196f3;
-            color: white;
-            padding: 15px 40px;
-            border-radius: 30px;
+        .close:hover,
+        .close:focus {
+            color: var(--hover-color);
             text-decoration: none;
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin: 10px;
-            transition: transform 0.2s ease, background 0.3s ease;
+        }
+
+        .audio-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--primary-gradient);
+            color: white;
+            padding: 15px;
+            border-radius: 50%;
             cursor: pointer;
-            border: none;
+            transition: all 0.3s ease;
+            z-index: 100;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        .play-button:hover {
-            transform: translateY(-2px);
-            background: #1976d2;
+        .audio-controls:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
-        .cursor-icon {
-            width: 24px;
-            height: 24px;
-            margin-left: 8px;
-        }
-
-        .menu {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 1rem;
-            margin-top: 2rem;
-            width: 100%;
-        }
-
-        .menu-item {
-            background: #f8f9fa;
-            padding: 1.5rem;
-            border-radius: 15px;
-            text-align: center;
-            transition: transform 0.2s ease;
-            cursor: pointer;
-        }
-
-        .menu-item:hover {
-            transform: translateY(-5px);
-        }
-
-        .menu-item i {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-            color: #2196f3;
-        }
-
-        .menu-item h3 {
-            font-size: 1.1rem;
-            margin-bottom: 0.5rem;
-            color: #333;
-        }
-
-        .menu-item p {
-            font-size: 0.9rem;
-            color: #666;
+        .audio-controls i {
+            font-size: 24px;
         }
 
         @media (max-width: 768px) {
-            .container {
-                padding: 20px;
+            .dashboard {
+                flex-direction: column;
             }
 
-            .logo {
-                font-size: 2.5rem;
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: static;
             }
 
-            .menu {
-                grid-template-columns: 1fr;
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
             }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .progress {
+            width: 0;
+            height: 100%;
+            background-color: var(--hover-color);
+            transition: width 0.5s ease;
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .shake {
+            animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
+        }
+
+        @keyframes shake {
+            10%, 90% {
+                transform: translate3d(-1px, 0, 0);
+            }
+            20%, 80% {
+                transform: translate3d(2px, 0, 0);
+            }
+            30%, 50%, 70% {
+                transform: translate3d(-4px, 0, 0);
+            }
+            40%, 60% {
+                transform: translate3d(4px, 0, 0);
+            }
+        }
+
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+
+        @keyframes floating {
+            0% { transform: translate(0,  0px); }
+            50%  { transform: translate(0, 15px); }
+            100%   { transform: translate(0, -0px); }   
+        }
+
+        .card-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--accent-gradient);
+            color: white;
+            padding: 1rem;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
         }
     </style>
 </head>
 <body>
-    <div class="background-doodles" id="doodles"></div>
-    <a href="#" class="exit-button">Exit</a>
+    <div class="dashboard">
+        <aside class="sidebar">
+            <h1 class="floating">Spark Fusion</h1>
+            <nav>
+                <ul class="sidebar-nav">
+                    <li><a href="#" onclick="showSection('settings')"><i class="fas fa-cog"></i> Settings</a></li>
+                    <li><a href="#" onclick="showSection('single-player')"><i class="fas fa-user"></i> Single Player</a></li>
+                    <li><a href="#" onclick="showSection('two-player')"><i class="fas fa-users"></i> Two Player</a></li>
+                    <li><a href="#" onclick="showSection('about')"><i class="fas fa-info-circle"></i> About</a></li>
+                </ul>
+            </nav>
+        </aside>
+        <main class="main-content">
+            <header class="header">
+                <h2 id="section-title">Dashboard</h2>
+                <button class="btn pulse" onclick="startGame()">Play Now</button>
+            </header>
+            <div id="content" class="card-container">
+                <!-- Content will be dynamically loaded here -->
+            </div>
+        </main>
+    </div>
 
-    <div class="container">
-        <h1 class="logo">Brain Out</h1>
-        
-        <button class="play-button">
-            Play now
-            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='white' viewBox='0 0 24 24'%3E%3Cpath d='M13 5.5c0-1.381 1.119-2.5 2.5-2.5s2.5 1.119 2.5 2.5-1.119 2.5-2.5 2.5-2.5-1.119-2.5-2.5zm0 13c0-1.381 1.119-2.5 2.5-2.5s2.5 1.119 2.5 2.5-1.119 2.5-2.5 2.5-2.5-1.119-2.5-2.5zm-11-13c0-1.381 1.119-2.5 2.5-2.5s2.5 1.119 2.5 2.5-1.119 2.5-2.5 2.5-2.5-1.119-2.5-2.5zm0 13c0-1.381 1.119-2.5 2.5-2.5s2.5 1.119 2.5 2.5-1.119 2.5-2.5 2.5-2.5-1.119-2.5-2.5z'/%3E%3C/svg%3E" 
-                 alt="cursor" class="cursor-icon">
-        </button>
-
-        <div class="menu">
-            <div class="menu-item">
-                <i>🧩</i>
-                <h3>Puzzles</h3>
-                <p>Challenge your mind</p>
-            </div>
-            <div class="menu-item">
-                <i>👥</i>
-                <h3>Friends</h3>
-                <p>Play together</p>
-            </div>
-            <div class="menu-item">
-                <i>🏆</i>
-                <h3>Leaderboard</h3>
-                <p>Compare scores</p>
-            </div>
-            <div class="menu-item">
-                <i>⚙️</i>
-                <h3>Settings</h3>
-                <p>Customize game</p>
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 id="modal-title"></h2>
+            <p id="modal-content"></p>
+            <div class="progress-bar">
+                <div id="progress" class="progress"></div>
             </div>
         </div>
     </div>
 
-    <script>
-        // Create background doodles
-        const doodles = document.getElementById('doodles');
-        const doodleSymbols = ['✏️', '📚', '🔬', '⚡', '💡', '🎵', '➗', '✖️', '➕', '✍️'];
-        const numberOfDoodles = 50;
+    <div id="audioControls" class="audio-controls" onclick="toggleAudio()">
+        <i id="audioIcon" class="fas fa-volume-up"></i>
+    </div>
 
-        for (let i = 0; i < numberOfDoodles; i++) {
-            const doodle = document.createElement('div');
-            doodle.className = 'doodle';
-            doodle.textContent = doodleSymbols[Math.floor(Math.random() * doodleSymbols.length)];
-            doodle.style.left = `${Math.random() * 100}%`;
-            doodle.style.top = `${Math.random() * 100}%`;
-            doodle.style.transform = `rotate(${Math.random() * 360}deg)`;
-            doodles.appendChild(doodle);
+    <div id="notification" class="notification">
+        <!-- Notification content will be dynamically loaded here -->
+    </div>
+
+    <audio id="backgroundMusic" loop>
+        <source src="Game.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <script>
+        const audioElement = document.getElementById('backgroundMusic');
+        const audioControls = document.getElementById('audioControls');
+        const audioIcon = document.getElementById('audioIcon');
+        let isPlaying = false;
+
+        function toggleAudio() {
+            if (isPlaying) {
+                audioElement.pause();
+                audioIcon.className = 'fas fa-volume-mute';
+            } else {
+                audioElement.play();
+                audioIcon.className = 'fas fa-volume-up';
+            }
+            isPlaying = !isPlaying;
+            
+            audioControls.classList.add('shake');
+            setTimeout(() => {
+                audioControls.classList.remove('shake');
+            }, 820);
         }
 
-        // Add click animation to play button
-        const playButton = document.querySelector('.play-button');
-        playButton.addEventListener('click', () => {
-            playButton.style.transform = 'scale(0.95)';
+        const sectionData = {
+            'settings': {
+                title: 'Settings',
+                cards: [
+                    { title: 'Audio Settings', content: 'Adjust game volume and sound effects.', icon: 'fa-volume-up' },
+                    { title: 'Display Settings', content: 'Customize game visuals and UI preferences.', icon: 'fa-desktop' },
+                    { title: 'Account Settings', content: 'Manage your Spark Fusion account details.', icon: 'fa-user-cog' },
+                    { title: 'Accessibility', content: 'Configure accessibility options for an inclusive experience.', icon: 'fa-universal-access' }
+                ]
+            },
+            'single-player': {
+                title: 'Single Player Games',
+                cards: [
+                    { title: 'Memory Challenge', content: 'Test and improve your memory skills.', icon: 'fa-brain' },
+                    { title: 'Logic Puzzles', content: 'Solve mind-bending logic problems.', icon: 'fa-puzzle-piece' },
+                    { title: 'Math Mania', content: 'Sharpen your mathematical abilities.', icon: 'fa-calculator' },
+                    { title: 'Word Wizardry', content: 'Expand your vocabulary and language skills.', icon: 'fa-book' }
+                ]
+            },
+            'two-player': {
+                title: 'Two Player Games',
+                cards: [
+                    { title: 'Brain Battle', content: 'Compete head-to-head in various cognitive challenges.', icon: 'fa-chess' },
+                    { title: 'Cooperative Puzzles', content: 'Work together to solve complex problems.', icon: 'fa-hands-helping' },
+                    { title: 'Speed Showdown', content: 'Test your reflexes and quick thinking against a friend.', icon: 'fa-bolt' },
+                    { title: 'Trivia Duel', content: 'Challenge your knowledge across various topics.', icon: 'fa-question-circle' }
+                ]
+            },
+            'about': {
+                title: 'About Spark Fusion',
+                cards: [
+                    { title: 'Our Mission', content: 'Learn about our goal to make learning fun and engaging.', icon: 'fa-bullseye' },
+                    { title: 'How It Works', content: 'Discover the science behind our brain-training games.', icon: 'fa-cogs' },
+                    { title: 'Team', content: 'Meet the minds behind Brain Out.', icon: 'fa-users' },
+                    { title: 'Contact Us', content: 'Get in touch with our support team for any queries.', icon: 'fa-envelope' }
+                ]
+            }
+        };
+
+        function showSection(section) {
+            const sectionTitle = document.getElementById('section-title');
+            const content = document.getElementById('content');
+            
+            sectionTitle.textContent = sectionData[section].title;
+            content.innerHTML = '';
+
+            document.querySelectorAll('.sidebar-nav a').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelector(`.sidebar-nav a[onclick="showSection('${section}')"]`).classList.add('active');
+
+            sectionData[section].cards.forEach((card, index) => {
+                const cardElement = document.createElement('div');
+                cardElement.className = 'card fade-in';
+                cardElement.style.animationDelay = `${index * 0.1}s`;
+                cardElement.innerHTML = `
+                    <i class="fas ${card.icon} card-icon"></i>
+                    <h3>${card.title}</h3>
+                    <p>${card.content}</p>
+                `;
+                cardElement.addEventListener('click', () => openModal(card.title, card.content));
+                content.appendChild(cardElement);
+            });
+        }
+
+        function startGame() {
+            openModal('Start Game', 'Choose a game mode to begin your Brain Out adventure!');
+            simulateLoading();
+        }
+
+        function openModal(title, content) {
+            const modal = document.getElementById('modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalContent = document.getElementById('modal-content');
+
+            modalTitle.textContent = title;
+            modalContent.textContent = content;
+
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('modal');
+            modal.classList.remove('active');
+        }
+
+        function simulateLoading() {
+            const progress = document.getElementById('progress');
+            let width = 0;
+            const interval = setInterval(() => {
+                if (width >= 100) {
+                    clearInterval(interval);
+                    openModal('Game Ready!', 'Your game is ready to play. Enjoy!');
+                    showNotification('Game loaded successfully!');
+                } else {
+                    width++;
+                    progress.style.width = width + '%';
+                }
+            }, 50);
+        }
+
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
             setTimeout(() => {
-                playButton.style.transform = 'none';
-            }, 100);
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        showSection('settings');
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('modal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+        const sectionTitle = document.getElementById('section-title');
+        sectionTitle.addEventListener('mouseover', () => {
+            sectionTitle.style.color = 'var(--hover-color)';
+        });
+        sectionTitle.addEventListener('mouseout', () => {
+            sectionTitle.style.color = 'var(--text-color)';
         });
 
-        // Add hover effect to menu items
-        const menuItems = document.querySelectorAll('.menu-item');
-        menuItems.forEach(item => {
-            item.addEventListener('mouseenter', () => {
-                item.style.transform = 'translateY(-5px)';
-            });
-            item.addEventListener('mouseleave', () => {
-                item.style.transform = 'translateY(0)';
-            });
+        const playButton = document.querySelector('.btn');
+        playButton.addEventListener('mouseover', () => {
+            playButton.classList.add('pulse');
+        });
+        playButton.addEventListener('mouseout', () => {
+            playButton.classList.remove('pulse');
         });
     </script>
 </body>
