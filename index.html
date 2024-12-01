@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SparkFusion</title>
+    <title>Brain Out - Interactive Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -306,6 +306,19 @@
                 margin-left: 0;
                 padding: 1rem;
             }
+
+            .card-container {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .header h2 {
+                margin-bottom: 1rem;
+            }
         }
 
         @keyframes fadeIn {
@@ -368,16 +381,6 @@
             }
         }
 
-        .floating {
-            animation: floating 3s ease-in-out infinite;
-        }
-
-        @keyframes floating {
-            0% { transform: translate(0,  0px); }
-            50%  { transform: translate(0, 15px); }
-            100%   { transform: translate(0, -0px); }   
-        }
-
         .card-icon {
             font-size: 2rem;
             margin-bottom: 1rem;
@@ -407,12 +410,12 @@
 <body>
     <div class="dashboard">
         <aside class="sidebar">
-            <h1 class="floating">Spark Fusion</h1>
+            <h1>Spark Fusion</h1>
             <nav>
                 <ul class="sidebar-nav">
-                    <li><a href="#" onclick="showSection('settings')"><i class="fas fa-cog"></i> Settings</a></li>
                     <li><a href="#" onclick="showSection('single-player')"><i class="fas fa-user"></i> Single Player</a></li>
                     <li><a href="#" onclick="showSection('two-player')"><i class="fas fa-users"></i> Two Player</a></li>
+                    <li><a href="#" onclick="showSection('settings')"><i class="fas fa-cog"></i> Settings</a></li>
                     <li><a href="#" onclick="showSection('about')"><i class="fas fa-info-circle"></i> About</a></li>
                 </ul>
             </nav>
@@ -452,21 +455,58 @@
         Your browser does not support the audio element.
     </audio>
 
+    <audio id="clickSound">
+        <source src="click.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
     <script>
         const audioElement = document.getElementById('backgroundMusic');
+        const clickSound = document.getElementById('clickSound');
         const audioControls = document.getElementById('audioControls');
         const audioIcon = document.getElementById('audioIcon');
         let isPlaying = false;
+
+        function playAudio() {
+            audioElement.play().then(() => {
+                isPlaying = true;
+                audioIcon.className = 'fas fa-volume-up';
+            }).catch(error => {
+                console.log("Audio play failed:", error);
+                isPlaying = false;
+                audioIcon.className = 'fas fa-volume-mute';
+            });
+        }
+
+        // Play audio as soon as possible
+        window.addEventListener('load', () => {
+            playAudio();
+        });
+
+        // Attempt to play again when the window gains focus
+        window.addEventListener('focus', () => {
+            if (!isPlaying) {
+                playAudio();
+            }
+        });
+
+        // Attempt to play on user interaction
+        document.addEventListener('click', () => {
+            if (!isPlaying) {
+                playAudio();
+            }
+        }, { once: true });
 
         function toggleAudio() {
             if (isPlaying) {
                 audioElement.pause();
                 audioIcon.className = 'fas fa-volume-mute';
+                isPlaying = false;
             } else {
                 audioElement.play();
                 audioIcon.className = 'fas fa-volume-up';
+                isPlaying = true;
             }
-            isPlaying = !isPlaying;
             
             audioControls.classList.add('shake');
             setTimeout(() => {
@@ -474,16 +514,12 @@
             }, 820);
         }
 
+        function playClickSound() {
+            clickSound.currentTime = 0;
+            clickSound.play().catch(error => console.log("Click sound play failed:", error));
+        }
+
         const sectionData = {
-            'settings': {
-                title: 'Settings',
-                cards: [
-                    { title: 'Audio Settings', content: 'Adjust game volume and sound effects.', icon: 'fa-volume-up' },
-                    { title: 'Display Settings', content: 'Customize game visuals and UI preferences.', icon: 'fa-desktop' },
-                    { title: 'Account Settings', content: 'Manage your Spark Fusion account details.', icon: 'fa-user-cog' },
-                    { title: 'Accessibility', content: 'Configure accessibility options for an inclusive experience.', icon: 'fa-universal-access' }
-                ]
-            },
             'single-player': {
                 title: 'Single Player Games',
                 cards: [
@@ -496,10 +532,19 @@
             'two-player': {
                 title: 'Two Player Games',
                 cards: [
-                    { title: 'Brain Battle', content: 'Compete head-to-head in various cognitive challenges.', icon: 'fa-chess' },
+                    { title: 'Chess', content: 'Play the classic game of strategy.', icon: 'fa-chess', redirect: 'Main2.html' },
                     { title: 'Cooperative Puzzles', content: 'Work together to solve complex problems.', icon: 'fa-hands-helping' },
                     { title: 'Speed Showdown', content: 'Test your reflexes and quick thinking against a friend.', icon: 'fa-bolt' },
                     { title: 'Trivia Duel', content: 'Challenge your knowledge across various topics.', icon: 'fa-question-circle' }
+                ]
+            },
+            'settings': {
+                title: 'Settings',
+                cards: [
+                    { title: 'Audio Settings', content: 'Adjust game volume and sound effects.', icon: 'fa-volume-up' },
+                    { title: 'Display Settings', content: 'Customize game visuals and UI preferences.', icon: 'fa-desktop' },
+                    { title: 'Accessibility', content: 'Configure accessibility options for an inclusive experience.', icon: 'fa-universal-access' },
+                    { title: 'Language', content: 'Change the language of the interface.', icon: 'fa-language' }
                 ]
             },
             'about': {
@@ -534,12 +579,20 @@
                     <h3>${card.title}</h3>
                     <p>${card.content}</p>
                 `;
-                cardElement.addEventListener('click', () => openModal(card.title, card.content));
+                cardElement.addEventListener('click', () => {
+                    playClickSound();
+                    if (card.redirect) {
+                        window.location.href = card.redirect;
+                    } else {
+                        openModal(card.title, card.content);
+                    }
+                });
                 content.appendChild(cardElement);
             });
         }
 
         function startGame() {
+            playClickSound();
             openModal('Start Game', 'Choose a game mode to begin your Brain Out adventure!');
             simulateLoading();
         }
@@ -584,7 +637,7 @@
             }, 3000);
         }
 
-        showSection('settings');
+        showSection('single-player');
 
         window.onclick = function(event) {
             const modal = document.getElementById('modal');
@@ -607,6 +660,11 @@
         });
         playButton.addEventListener('mouseout', () => {
             playButton.classList.remove('pulse');
+        });
+
+        // Add click sound to all interactive elements
+        document.querySelectorAll('.btn, .sidebar-nav a, .close').forEach(element => {
+            element.addEventListener('click', playClickSound);
         });
     </script>
 </body>
